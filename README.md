@@ -48,9 +48,9 @@ O relatório final exibe todos esses valores, além do sigma dos log-retornos e 
 ## 📈 Exemplo de Saída
 RELATÓRIO DO ÍNDICE MELÃO (MeI)
 ================================
-1. Início do período: 2020.01.02 00:00
-2. Fim do período: 2025.12.30 23:59
-3. T (anos): 5.997260
+ Início do período: 2020.01.02 00:00
+ Fim do período: 2025.12.30 23:59
+ T (anos): 5.997260
 4. Pontos na série: 2192
 5. Deals de trading considerados: 845 (ignorados: 12)
 6. Saldo inicial utilizado: 10000.00
