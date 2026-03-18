@@ -48,30 +48,30 @@ O relatório final exibe todos esses valores, além do sigma dos log-retornos e 
 ## 📈 Exemplo de Saída
 RELATÓRIO DO ÍNDICE MELÃO (MeI)
 ================================
-Início do período: 2020.01.02 00:00
-Fim do período: 2025.12.30 23:59
-T (anos): 5.997260
-Pontos na série: 2192
-Deals de trading considerados: 845 (ignorados: 12)
-Saldo inicial utilizado: 10000.00
-
-Inclinação da regressão (por ano): 0.152340123456
-R anualizado estimado: 0.164534 (16.45%)
-Inflação anual i: 0.040000 (4.00%)
-Sigma anualizado (log-retornos): 0.187200
-Sigma por passo (log-retornos): 0.012345
-
-Episódios de drawdown detectados: 8
-Frações originais (MDD) e transformadas (MDD*):
-[1] MDD=12.34%, MDD*=0.14080
-[2] MDD=8.90%, MDD*=0.09770
-...
-
-Usando topK = 5 para calcular MDD*
-MDD* global (maior transformado): 0.14080
-MDD* utilizado (média dos topK transformados): 0.11234
-
-MeI = 2.345678901234
+1. Início do período: 2020.01.02 00:00
+2. Fim do período: 2025.12.30 23:59
+3. T (anos): 5.997260
+4. Pontos na série: 2192
+5. Deals de trading considerados: 845 (ignorados: 12)
+6. Saldo inicial utilizado: 10000.00
+7.
+8. Inclinação da regressão (por ano): 0.152340123456
+9. R anualizado estimado: 0.164534 (16.45%)
+10. Inflação anual i: 0.040000 (4.00%)
+11. Sigma anualizado (log-retornos): 0.187200
+12. Sigma por passo (log-retornos): 0.012345
+13. 
+14. Episódios de drawdown detectados: 8
+15. Frações originais (MDD) e transformadas (MDD*):
+16. [1] MDD=12.34%, MDD*=0.14080
+17. [2] MDD=8.90%, MDD*=0.09770
+18. ...
+19. 
+20. Usando topK = 5 para calcular MDD*
+21. MDD* global (maior transformado): 0.14080
+22. MDD* utilizado (média dos topK transformados): 0.11234
+23. 
+24. MeI = 2.345678901234
 
 ## 🧠 Fundamentação Teórica
 
