@@ -1,0 +1,36 @@
+RELATÓRIO DO ÍNDICE MELÃO (MeI)
+================================
+Início do período: 2025.12.02 17:50
+Fim do período:    2026.03.18 16:03
+T (anos): 0.290008
+Pontos na série: 107
+Deals de trading considerados: 1896
+Movimentos não-trading ignorados: 0
+Saldo base usado: 1000000.00000000
+Lucro trading total no período: -7587.00000000
+Movimentos externos totais no período: 0.00000000
+
+Inclinação da regressão (por ano): -0.042938067485
+R anualizado estimado: -0.042029 (-4.20%)
+Inflação anual i: 0.000000 (0.00%)
+Sigma anualizado (log-retornos): 0.015883
+Sigma por passo (log-retornos): 0.000831
+
+Episódios de drawdown detectados: 4
+Frações originais (MDD) e transformadas (MDD*):
+  [1] MDD=1.1784%, MDD*=0.01192501
+  [2] MDD=0.0605%, MDD*=0.00060532
+  [3] MDD=0.0525%, MDD*=0.00052565
+  [4] MDD=0.0313%, MDD*=0.00031328
+
+Usando topK = 5 para calcular MDD*
+MDD* global (maior transformado): 0.01192501
+MDD* utilizado (média dos topK transformados): 0.00334231
+
+MeI = -6.929872281984
+
+Observações:
+- R estimado por regressão linear sobre ln(saldo), conforme artigo.
+- MDD* = MDD / (1 - MDD) [equação (3)].
+- MeI = [ln(1+R) - ln(1+i)] / ln(1+MDD*) * sqrt(T) [equação (4)].
+- Todas as taxas em decimais (ex: 0.10 = 10%).
