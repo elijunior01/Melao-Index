@@ -68,39 +68,39 @@ O relatório final exibe todos os valores calculados, incluindo a tabela da esti
 
 ## 📈 Exemplo de Saída (v3.2)
 RELATÓRIO DO ÍNDICE MELÃO (MeI) v3.2
-======================================
-Início : 2026.03.01 22:13
-Fim : 2026.03.23 00:57
-T (anos) : 0.057808
-Pontos na série : 2281
-Modo de série : Por deal (granularidade máxima)
-Deals de trading : 2280
-Deals não-trading : 0
-Saldo base estimado : 1000.00000000
-Benchmark : desativado
-
-R anualizado (regressão) : 244.964096 (24496.4096% a.a.)
-Inflação anual : 0.000000 (0.0000% a.a.)
-Sigma anualizado : 0.837241
-Períodos/ano usados : 39440.73
-
-Episódios de drawdown : 68
-MDD medido (maior) : 13.2105% → MDD* = 0.15221265
-
---- Estimativa Bayesiana do MDD* ---
-n_episodios=68 | media(MDD*)=0.012195 | z(k=1)=2.1837
-k MDD*_k p_k z_k sigma_k est_k
-1 0.152213 0.9855 2.1837 0.064120 0.152213 ← novo máx
-2 0.082993 0.9710 1.8959 0.037342 0.093739
-3 0.082849 0.9565 1.7117 0.041278 0.102333
-4 0.074330 0.9420 1.5720 0.039525 0.098506
-5 0.065703 0.9275 1.4577 0.036707 0.092352
-
-MDD* Bayesiano final = 0.15221265 (MDD equivalente = 13.2105%)
-
-MeI = 9.342125312790 <<<
-
-
+1. ======================================
+2. Início : 2026.03.01 22:13
+3. Fim : 2026.03.23 00:57
+4. T (anos) : 0.057808
+5. Pontos na série : 2281
+6. Modo de série : Por deal (granularidade máxima)
+7. Deals de trading : 2280
+8. Deals não-trading : 0
+9. Saldo base estimado : 1000.00000000
+10. Benchmark : desativado
+11. 
+12. R anualizado (regressão) : 244.964096 (24496.4096% a.a.)
+13. Inflação anual : 0.000000 (0.0000% a.a.)
+14. Sigma anualizado : 0.837241
+15. Períodos/ano usados : 39440.73
+16. 
+17. Episódios de drawdown : 68
+18. MDD medido (maior) : 13.2105% → MDD* = 0.15221265
+19, 
+20. --- Estimativa Bayesiana do MDD* ---
+21. n_episodios=68 | media(MDD*)=0.012195 | z(k=1)=2.1837
+22. k MDD*_k p_k z_k sigma_k est_k
+23. 1 0.152213 0.9855 2.1837 0.064120 0.152213 ← novo máx
+24. 2 0.082993 0.9710 1.8959 0.037342 0.093739
+25. 3 0.082849 0.9565 1.7117 0.041278 0.102333
+26. 4 0.074330 0.9420 1.5720 0.039525 0.098506
+27. 5 0.065703 0.9275 1.4577 0.036707 0.092352
+28. 
+29. MDD* Bayesiano final = 0.15221265 (MDD equivalente = 13.2105%)
+30. 
+31. MeI = 9.342125312790 <<<
+32. 
+33. 
 ## 🧠 Fundamentação Teórica
 
 O Índice Melão resolve sete problemas identificados nas métricas clássicas:
