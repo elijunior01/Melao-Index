@@ -123,11 +123,6 @@ Contribuições são bem-vindas! Abra *issues* ou envie *pull requests* com melh
 
 Este projeto está licenciado sob a [Licença MIT](LICENSE). Você pode usá-lo livremente, desde que mantenha os créditos aos autores originais e ao artigo de referência.
 
-## ✉️ Contato
-
-- **Autor do código:** Eli Batista de Faria Junior  
-  [LinkedIn](https://www.linkedin.com/in/eli-batista-de-faria-j%C3%BAnior-430a5987/)
-
 - **Autor da teoria:** Hindemburg Melão Jr.  
   *THE MELAO INDEX: A NEW STANDARD FOR RISK-RETURN ANALYSIS...* (SSRN-id5188185)
 
