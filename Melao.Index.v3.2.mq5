@@ -1,6 +1,6 @@
 ﻿//+-------------------------------------------------------------------------+
-//|                                                    IndiceMelao_v4.0.mq5 |
-//|                        Índice Melão (MeI) — Calculadora v4.0            |
+//|                                                    IndiceMelao_v3.2.mq5 |
+//|                        Índice Melão (MeI) — Calculadora v3.2            |
 //|               Correções baseadas no artigo SSRN-5188185                 |
 //|                                                                         |
 //| CORREÇÕES IMPLEMENTADAS (comparado ao v3.1):                            |
@@ -602,7 +602,7 @@ void AbrirArquivo(const string caminho)
 //=============================================================================
 void OnStart()
 {
-   Print("=== Índice Melão v4.0 iniciado ===");
+   Print("=== Índice Melão v3.2 iniciado ===");
 
    // Validações básicas
    if(!usar_equity_por_deal && segundos_periodo<=0)
@@ -717,7 +717,7 @@ void OnStart()
                                   benchmark_symbol+" (FALHOU — retorno bruto usado)");
 
    string s="";
-   s += "RELATÓRIO DO ÍNDICE MELÃO (MeI) v4.0\n";
+   s += "RELATÓRIO DO ÍNDICE MELÃO (MeI) v3.2\n";
    s += "======================================\n";
    s += "Início : "+TimeToString(st.tempos[0],  TIME_DATE|TIME_MINUTES)+"\n";
    s += "Fim    : "+TimeToString(st.tempos[n-1],TIME_DATE|TIME_MINUTES)+"\n";
