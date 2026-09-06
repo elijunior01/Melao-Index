@@ -2,130 +2,368 @@
 
 [![Licença: MIT](https://img.shields.io/badge/Licença-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-**Calculadora do Índice Melão (MeI)** – um script em MQL5 que implementa a métrica de desempenho proposta por Hindemburg Melão Jr. no artigo *"THE MELAO INDEX: A NEW STANDARD FOR RISK-RETURN ANALYSIS, RESOLVING FUNDAMENTAL INCONSISTENCIES IN THE SHARPE RATIO AND RELATED METRICS"* (SSRN-id5188185).
+## 📊 Sobre o projeto
 
-O Índice Melão corrige distorções presentes em métricas tradicionais (Sharpe, Sortino, Calmar, MAR) ao:
+O **Índice Melão (MeI)** é uma métrica de desempenho ajustado ao risco proposta por **Hindemburg Melão Jr.** no artigo:
 
-- Usar regressão linear sobre o logaritmo do saldo para estimar o retorno anualizado, eliminando a dependência dos pontos inicial e final.
-- Substituir o desvio padrão pelo *maximum drawdown* transformado (`MDD* = MDD/(1-MDD)`) como medida de risco.
-- Ajustar a escala entre retorno e risco, permitindo operações aritméticas consistentes.
-- Considerar o período de análise (`T`) para normalizar o índice.
+> *THE MELAO INDEX: A NEW STANDARD FOR RISK-RETURN ANALYSIS, RESOLVING FUNDAMENTAL INCONSISTENCIES IN THE SHARPE RATIO AND RELATED METRICS*
 
-Esta versão incorpora melhorias robustez e fidelidade à teoria, incluindo:
+Este projeto implementa o cálculo do MeI em **MQL5**, permitindo analisar o desempenho histórico de estratégias e contas de negociação diretamente no **MetaTrader 5**.
 
-- **Estimativa Bayesiana do MDD\*** – projeta o drawdown máximo esperado com base na distribuição dos episódios de perda, evitando subestimação do risco.
-- **Série de equity por *deal*** – utiliza a granularidade máxima do MT5 (cada trade fechado gera um ponto), capturando drawdowns intradiários que seriam perdidos em amostragens temporais.
-- **Subtração opcional de benchmark** – permite isolar o retorno em excesso da estratégia, removendo o "arrasto" do índice de mercado.
+A proposta do Índice Melão é avaliar o desempenho considerando simultaneamente:
 
-## 📥 Instalação
-
-1. Copie o arquivo `IndiceMelao_v3.2.mq5` para a pasta `MQL5/Scripts/` do seu terminal MetaTrader 5.
-2. No MetaTrader, abra o **Navegador**, localize o script em `Scripts` e arraste-o para o gráfico do ativo desejado.
-3. Ajuste os parâmetros de entrada conforme necessário e clique em OK.
-
-## ⚙️ Parâmetros de Entrada
-
-| Parâmetro | Descrição | Padrão |
-|-----------|-----------|--------|
-| **Período e Amostragem** |
-| `usar_equity_por_deal` | `true` → série por *deal* (resolução máxima); `false` → série temporal com intervalo fixo. | `true` |
-| `segundos_periodo` | Amostragem temporal (em segundos). Usado apenas se `usar_equity_por_deal = false`. | `86400` |
-| `tempo_inicio` | Data/hora de início da análise. `0` = detecta automaticamente o primeiro *deal* de trading. | `0` |
-| `tempo_fim` | Data/hora de fim. `0` = agora. | `0` |
-| **Benchmark — Subtração do Mercado** |
-| `benchmark_symbol` | Símbolo do benchmark (ex.: `WIN$N`, `IBOV`, `SPX500`). Deixe vazio para desativar. | `""` |
-| `benchmark_tf` | *Timeframe* para coleta do preço do benchmark. | `PERIOD_D1` |
-| **Parâmetros do MeI** |
-| `topK` | Número de maiores drawdowns a considerar na estimativa bayesiana do `MDD*`. | `5` |
-| `inflacao_anual` | Taxa de inflação anual (decimal). Ex: `0.04` = 4% a.a. | `0.0` |
-| `saldo_inicial_manual` | Saldo inicial da série (`0` = automático). Útil para backtests com capital conhecido. | `0.0` |
-| `ponderar_regressao` | Se `true`, aplica ponderação exponencial na regressão (dados recentes com mais peso). | `false` |
-| `fator_ponderacao` | Fator de ponderação (base do exponencial) – usado apenas se `ponderar_regressao = true`. | `0.95` |
-| **Saída** |
-| `gravarArquivo` | Salva o relatório em um arquivo `.txt` na pasta `MQL5/Files`. | `true` |
-| `abrirArquivoAoFinal` | Abre automaticamente o arquivo gerado ao final da execução. | `true` |
-
-## 📊 O que o script calcula?
-
-1. **Série de saldos** –  
-   - Se `usar_equity_por_deal = true`: cada *deal* de compra/venda gera um ponto (captura drawdowns intradiários).  
-   - Caso contrário: os lucros são agregados em intervalos fixos.
-
-2. **Retorno anualizado (R)** – pela regressão linear de `ln(saldo)` contra o tempo.  
-   `R = exp(inclinação) - 1`
-
-3. **Período T** – diferença entre o primeiro e o último ponto, em anos.
-
-4. **Drawdowns** – identificação de todos os episódios de queda (pico → vale). Cada drawdown é transformado em `MDD* = MDD/(1-MDD)`.
-
-5. **MDD* Bayesiano** – utilizando os `topK` maiores drawdowns, projeta o drawdown máximo esperado via posições percentílicas e inversa da normal, conforme Seção VII do artigo.
-
-6. **Índice Melão (MeI)** –  
-   `MeI = [ln(1+R) - ln(1+i)] / ln(1+MDD*) × √T`  
-   onde `i` é a inflação anual.
-
-O relatório final exibe todos os valores calculados, incluindo a tabela da estimativa bayesiana.
-
-## 📈 Exemplo de Saída (v3.2)
-RELATÓRIO DO ÍNDICE MELÃO (MeI) v3.2
-1. ======================================
-2. Início : 2026.03.01 22:13
-3. Fim : 2026.03.23 00:57
-4. T (anos) : 0.057808
-5. Pontos na série : 2281
-6. Modo de série : Por deal (granularidade máxima)
-7. Deals de trading : 2280
-8. Deals não-trading : 0
-9. Saldo base estimado : 1000.00000000
-10. Benchmark : desativado
-11. 
-12. R anualizado (regressão) : 244.964096 (24496.4096% a.a.)
-13. Inflação anual : 0.000000 (0.0000% a.a.)
-14. Sigma anualizado : 0.837241
-15. Períodos/ano usados : 39440.73
-16. 
-17. Episódios de drawdown : 68
-18. MDD medido (maior) : 13.2105% → MDD* = 0.15221265
-19, 
-20. --- Estimativa Bayesiana do MDD* ---
-21. n_episodios=68 | media(MDD*)=0.012195 | z(k=1)=2.1837
-22. k MDD*_k p_k z_k sigma_k est_k
-23. 1 0.152213 0.9855 2.1837 0.064120 0.152213 ← novo máx
-24. 2 0.082993 0.9710 1.8959 0.037342 0.093739
-25. 3 0.082849 0.9565 1.7117 0.041278 0.102333
-26. 4 0.074330 0.9420 1.5720 0.039525 0.098506
-27. 5 0.065703 0.9275 1.4577 0.036707 0.092352
-28. 
-29. MDD* Bayesiano final = 0.15221265 (MDD equivalente = 13.2105%)
-30. 
-31. MeI = 9.342125312790 <<<
-32. 
-33. 
-## 🧠 Fundamentação Teórica
-
-O Índice Melão resolve sete problemas identificados nas métricas clássicas:
-
-1. **Dependência dos pontos inicial/final** → regressão linear no ln(saldo).
-2. **Escalas diferentes entre retorno e risco** → transformação `MDD*`.
-3. **Crescimento geométrico tratado como aritmético** → uso de logaritmos.
-4. **Drawdown cresce com o tempo** → normalização por `√T`.
-5. **Tratamento inadequado de outliers** → uso do MDD em vez de desvio padrão.
-6. **Benchmark "livre de risco" inadequado** → usa inflação como referência de escala.
-7. **Distribuições não Gaussianas** → MDD captura caudas pesadas.
-
-Para detalhes completos, consulte o artigo original: [SSRN 5188185](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5188185).
-
-## 🛠️ Contribuições
-
-Contribuições são bem-vindas! Abra *issues* ou envie *pull requests* com melhorias, correções ou traduções, mantendo a fidelidade à teoria acadêmica.
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [Licença MIT](LICENSE). Você pode usá-lo livremente, desde que mantenha os créditos aos autores originais e ao artigo de referência.
-
-- **Autor da teoria:** Hindemburg Melão Jr.  
-  *THE MELAO INDEX: A NEW STANDARD FOR RISK-RETURN ANALYSIS...* (SSRN-id5188185)
+- retorno;
+- risco representado pelo Maximum Drawdown (MDD);
+- transformação do MDD para uma escala compatível com o retorno;
+- duração do histórico;
+- inflação;
+- e, opcionalmente, um benchmark de mercado.
 
 ---
 
-**Nota:** Este script é fornecido "como está", sem garantias. Use por sua conta e risco em decisões de investimento reais.
+## 🎯 Objetivo
+
+Métricas tradicionais como **Sharpe, Sortino, Calmar e MAR** utilizam diferentes formas de relacionar retorno e risco.
+
+O MeI procura reduzir algumas das distorções dessas abordagens utilizando:
+
+1. **Regressão sobre o logaritmo do saldo** para estimar a taxa de crescimento;
+2. **MDD** como medida de risco máximo;
+3. transformação **MDD*** para colocar risco e retorno em escalas compatíveis;
+4. normalização pelo período histórico através de `√T`;
+5. ajuste pela inflação.
+
+A formulação principal é:
+
+\[
+MeI =
+\frac{\ln(1+R)-\ln(1+i)}
+{\ln(1+MDD^*)}
+\sqrt{T}
+\]
+
+onde:
+
+- `R` = retorno anualizado estimado;
+- `i` = inflação anual;
+- `MDD*` = Maximum Drawdown transformado;
+- `T` = período da análise em anos.
+
+---
+
+# 🧮 Como o cálculo funciona
+
+## 1. Retorno
+
+A versão 3.4 utiliza uma **regressão linear de `ln(saldo)` em função do tempo**.
+
+Em vez de considerar somente o primeiro e o último saldo, a regressão utiliza a trajetória histórica disponível para estimar a taxa média de crescimento.
+
+A taxa anualizada é calculada por:
+
+\[
+R=e^\beta-1
+\]
+
+onde `β` é a inclinação da regressão.
+
+Também existe a possibilidade de aplicar **ponderação exponencial**, dando maior peso às observações mais recentes.
+
+---
+
+## 2. Maximum Drawdown
+
+O MDD representa a maior queda da série de saldo/equity entre um pico e o vale subsequente.
+
+O MDD é então transformado em:
+
+\[
+MDD^*=\frac{MDD}{1-MDD}
+\]
+
+Essa transformação permite trabalhar com o risco em uma escala sem o limite superior de 100%.
+
+Exemplos:
+
+| MDD | MDD* |
+|---:|---:|
+| 10% | 0,1111 |
+| 20% | 0,2500 |
+| 50% | 1,0000 |
+| 90% | 9,0000 |
+
+---
+
+## 3. Estimativa dos maiores drawdowns
+
+A versão 3.4 também pode analisar os maiores episódios de drawdown para obter uma estimativa adicional do risco máximo.
+
+O procedimento utiliza:
+
+- os maiores episódios de MDD;
+- suas posições percentílicas;
+- a transformação em `MDD*`;
+- estimativas baseadas na abordagem discutida na Seção VII do artigo.
+
+O objetivo é reduzir a dependência de uma única observação extrema de MDD.
+
+---
+
+## 4. Período histórico
+
+O período analisado é representado por:
+
+\[
+T=\text{tempo em anos}
+\]
+
+e entra na fórmula como:
+
+\[
+\sqrt{T}
+\]
+
+Assim, o índice considera a duração do histórico ao comparar retorno e risco.
+
+---
+
+## 5. Inflação
+
+A inflação anual pode ser informada pelo usuário:
+
+```text
+0.04 = 4% ao ano
+0.00 = sem ajuste
+```
+
+Ela é utilizada no numerador:
+
+\[
+\ln(1+R)-\ln(1+i)
+\]
+
+---
+
+# ⚙️ Características da versão 3.4
+
+A v3.4 foi desenvolvida para tornar a análise mais consistente e transparente.
+
+### Retorno
+
+- Regressão linear sobre `ln(saldo)`;
+- série temporal com intervalo configurável;
+- opção de ponderação exponencial;
+- reconstrução histórica do saldo;
+- suporte a períodos históricos encerrados no passado.
+
+### Risco
+
+- cálculo de MDD;
+- transformação MDD*;
+- identificação de episódios de drawdown;
+- estimativa adicional dos maiores riscos através dos episódios de MDD.
+
+### Análise
+
+- cálculo do MeI;
+- projeção operacional para 1 ano;
+- Profit Factor;
+- Recovery Factor;
+- Sigma anualizado como métrica auxiliar;
+- análise por janelas temporais;
+- diagnóstico de estabilidade.
+
+### Benchmark
+
+Permite utilizar opcionalmente um ativo de referência para ajustar a série pelo movimento do mercado.
+
+O recurso pode ser desativado deixando:
+
+```text
+benchmark_symbol = ""
+```
+
+---
+
+# 📥 Instalação
+
+1. Copie:
+
+```text
+IndiceMelao_v3.4.mq5
+```
+
+para:
+
+```text
+MQL5/Scripts/
+```
+
+2. Abra o MetaTrader 5.
+
+3. No **Navegador**, localize:
+
+```text
+Scripts → IndiceMelao_v3.4
+```
+
+4. Arraste o script para o gráfico.
+
+5. Configure os parâmetros e execute.
+
+---
+
+# ⚙️ Parâmetros
+
+| Parâmetro | Descrição | Padrão |
+|---|---|---:|
+| `usar_equity_por_deal` | Usa eventos de negociação como série alternativa | `true` |
+| `segundos_periodo` | Intervalo da série temporal | `86400` |
+| `tempo_inicio` | Início da análise; `0` = automático | `0` |
+| `tempo_fim` | Final da análise; `0` = agora | `0` |
+| `benchmark_symbol` | Símbolo do benchmark; vazio = desativado | `""` |
+| `benchmark_tf` | Timeframe do benchmark | `PERIOD_D1` |
+| `topK` | Número de maiores drawdowns analisados | `5` |
+| `inflacao_anual` | Inflação anual em decimal | `0.0` |
+| `saldo_inicial_manual` | Saldo inicial manual; `0` = automático | `0.0` |
+| `ponderar_regressao` | Pondera mais fortemente dados recentes | `false` |
+| `fator_ponderacao` | Fator da ponderação exponencial | `0.95` |
+| `gravarArquivo` | Salva o relatório em TXT | `true` |
+| `abrirArquivoAoFinal` | Abre o relatório automaticamente | `true` |
+
+---
+
+# 📄 Relatório
+
+O script gera um relatório contendo, entre outras informações:
+
+```text
+Período analisado
+Saldo inicial
+Resultado líquido
+Retorno do período
+Retorno anualizado
+MDD
+MDD*
+Estimativa Bayesiana
+MeI
+Projeção para 1 ano
+Profit Factor
+Recovery Factor
+Análise por janelas
+```
+
+O relatório pode ser salvo na pasta:
+
+```text
+MQL5/Files/
+```
+
+---
+
+# 📈 Exemplo
+
+Um resultado pode assumir a forma:
+
+```text
+R do período              : 108.99%
+R anualizado              : 9041.84%
+MDD                       : 5.55%
+MDD*                      : 0.058809
+T                         : 0.0809 anos
+
+MeI                       : 45.3465
+```
+
+O valor do MeI deve ser analisado em conjunto com o período, retorno, MDD e metodologia utilizada.
+
+---
+
+# ⚠️ Importante sobre históricos curtos
+
+Períodos curtos podem produzir retornos anualizados extremamente elevados.
+
+Por exemplo, uma estratégia que apresenta crescimento muito forte durante poucas semanas pode resultar em uma taxa anualizada matematicamente enorme.
+
+Isso **não significa que esse crescimento necessariamente será repetido durante um ano inteiro**.
+
+Por esse motivo, o relatório apresenta avisos quando o histórico é curto.
+
+---
+
+# ⚠️ Limitações
+
+O Índice Melão é uma métrica quantitativa e possui limitações.
+
+### MDD
+
+O MDD depende da resolução da série utilizada na análise.
+
+A v3.4 **não deve ser interpretada como um cálculo completo de MDD tick-a-tick da equity flutuante intratrade**.
+
+Uma queda ocorrida enquanto uma posição permanece aberta pode não ser capturada caso não exista um ponto correspondente na série utilizada.
+
+### Estimativa de risco
+
+A estimativa baseada nos maiores drawdowns é uma operacionalização da abordagem apresentada no artigo e não representa uma distribuição universal garantida.
+
+### Períodos curtos
+
+Retornos anualizados e projeções obtidos a partir de históricos muito curtos possuem elevada incerteza.
+
+### Benchmark
+
+O ajuste por benchmark é opcional e sua interpretação depende da natureza da estratégia e do mercado utilizado como referência.
+
+---
+
+# 📚 Fundamentação teórica
+
+O artigo do Índice Melão discute problemas encontrados em métricas tradicionais de desempenho ajustado ao risco e apresenta o MeI como uma alternativa baseada em:
+
+- regressão do crescimento;
+- MDD;
+- transformação `MDD*`;
+- logaritmos;
+- inflação;
+- normalização temporal.
+
+O artigo também discute a necessidade de considerar a evolução histórica completa em vez de depender exclusivamente dos pontos inicial e final.
+
+---
+
+# 📖 Referência
+
+**Hindemburg Melão Jr.**
+
+*THE MELAO INDEX: A NEW STANDARD FOR RISK-RETURN ANALYSIS, RESOLVING FUNDAMENTAL INCONSISTENCIES IN THE SHARPE RATIO AND RELATED METRICS.*
+
+**SSRN-id 5188185**
+
+[Ver artigo no SSRN](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5188185)
+
+---
+
+# 🤝 Contribuições
+
+Contribuições, sugestões, correções e melhorias são bem-vindas.
+
+Para contribuir, abra uma **Issue** ou envie um **Pull Request**.
+
+---
+
+# 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT**.
+
+Consulte o arquivo [LICENSE](LICENSE) para obter os termos completos.
+
+---
+
+# ⚠️ Aviso
+
+Este software é fornecido **"como está"**, sem garantias.
+
+O Índice Melão é uma ferramenta de análise quantitativa e **não constitui recomendação de investimento**.
+
+Resultados históricos não garantem resultados futuros.
